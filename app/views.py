@@ -9,7 +9,6 @@ import json
 # Home
 @app.route('/')
 def index():
-        #flash('Hello', 'success')
     return render_template('home.html')
 
 # About
