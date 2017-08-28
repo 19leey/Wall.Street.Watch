@@ -1,0 +1,69 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+  <head>
+    <script src="https://code.jquery.com/jquery-latest.js"></script>
+    <script src="http://code.highcharts.com/stock/highstock.js"></script>
+    <script src="http://code.highcharts.com/modules/exporting.js"></script>
+    <script>
+        // function to inject Highstock chart
+        $(function() {
+            var chart = Highcharts.stockChart('container', {
+                rangeSelector: {
+                    selected: 1
+                },
+                series: [{
+                    name: "{{ ticker }}",
+                    data: {{ data }}
+                }]
+            });
+        });
+
+        // function to format json string passed in 
+        function format(data){
+            var jsonObj = JSON.parse(data);
+            data = 
+                "Symbol: " + jsonObj[0].StockSymbol 
+                + "<br>Last Trade Price: " + jsonObj[0].LastTradePrice 
+                + "<br>Loss/Gain: " + jsonObj[0].Change 
+                + "<br>Loss/Gain Percentage: " + jsonObj[0].ChangePercent + "%"
+                + "<br>Last Trade Time: " + jsonObj[0].LastTradeDateTimeLong;
+
+            return data;
+        }
+
+        // function to update stock information every 3 seconds
+        function update(){
+            $.get('/updateStock/{{ ticker }}' ,function (response, status) {
+                if (status == 'success')        
+                    $('#variableInfo').html(format(response));
+            });
+        }
+
+        $(document).ready(function() {
+            setInterval("update()",3000);
+        });
+    </script>
+  </head>
+
+  <h1>Stock Details: {{ ticker }}</h1>
+  <h3>Information</h3>
+  <h4 id="variableInfo">
+    Symbol: {{ quote[0]['StockSymbol'] }}<br>
+    Last Trade Price: ${{ quote[0]['LastTradePrice'] }}<br>
+    Loss/Gain: {{ quote[0]['Change'] }}<br>
+    Loss/Gain Percentage: {{ quote[0]['ChangePercent'] }}%<br>
+    Last Trade Time: {{ quote[0]['LastTradeDateTimeLong'] }}
+  </h4>
+  <p>
+    Stock ID: {{ quote[0]['ID'] }}<br>
+    Index: {{ quote[0]['Index'] }}<br>
+    Previous Close Price: ${{ quote[0]['PreviousClosePrice'] }}
+  </p>
+
+  <div id="container" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+
+  <form>
+      <input type="button" value="Go back" onclick="history.back()"></input>
+  </form>
+{% endblock %}

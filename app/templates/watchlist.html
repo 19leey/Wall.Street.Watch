@@ -1,0 +1,50 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+  <head>
+    <script src="https://code.jquery.com/jquery-latest.js"></script>
+    <script>
+        // function to format json string passed in 
+        function format(data){
+            jsonObj = JSON.parse(data);
+
+            return jsonObj;
+        }
+
+        // function to update stock information every 3 seconds
+        function update(){
+            $.get('/updateWatchlist' ,function (response, status) {
+                if (status == 'success')
+                    var data = [];
+                    var stocks = format(response);
+                    for (i in stocks) {
+                        var stock = stocks[i].StockSymbol+"\">"+stocks[i].StockSymbol + "</a> " + stocks[i].LastTradePrice + " " + stocks[i].Change + " " + stocks[i].ChangePercent + "%<br>";
+                        data.push('<li class="list-group-item"><a href="/Stock/'+stock+'</h4>');
+                        $("#list ").empty();
+                }
+                $("#list").empty().html(data.join(""));
+            });
+        }
+
+        $(document).ready(function() {
+            setInterval("update()",5000);
+        });
+    </script>
+  </head>
+
+    <h1>Watched Stocks</h1>
+          <h3>Add A Stock</h3>
+        <form action="" method="POST" name="ticker">
+    {{ form.hidden_tag() }}
+    <p>
+        Ticker:<br>
+        {{ form.ticker(size=30) }}<br>
+    </p>
+    <p><input type="submit" value="Submit"></p>
+    </form>
+    {% for stock in stocks %}
+    <ul id="list">
+        <li class="list-group-item"><a href="/Stock/{{ stock[0]['Symbol'] }}">{{ stock[0]['StockSymbol'] }}</a> {{ stock[0]['LastTradePrice'] }} {{ stock[0]['Change'] }} {{ stock[0]['ChangePercent'] }}</h4>
+    </ul>
+    {% endfor %}
+{% endblock %}
