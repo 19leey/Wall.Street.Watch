@@ -15,7 +15,7 @@ class RegisterForm(Form):
     email = StringField('email', [validators.DataRequired()])
     username = StringField('username', [validators.Length(min=4)])
     password = PasswordField('password', [validators.Length(min=6, max=25), validators.EqualTo('confirm', message='Passwords do not match')])
-    confirm = PasswordField('confirm password')
+    confirm = PasswordField('confirm')
 
 # Ticker Form
 class TickerForm(Form):
