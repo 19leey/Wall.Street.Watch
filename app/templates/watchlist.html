@@ -33,15 +33,17 @@
   </head>
 
     <h1>Watched Stocks</h1>
-          <h3>Add A Stock</h3>
-        <form action="" method="POST" name="ticker">
+    <h3>Add A Stock</h3>
+    <form action="" method="POST" name="ticker">
     {{ form.hidden_tag() }}
-    <p>
-        Ticker:<br>
-        {{ form.ticker(size=30) }}<br>
-    </p>
-    <p><input type="submit" value="Submit"></p>
+
+        <div class="form-group">
+            <label>Ticker:</label>
+            <input type="text" name="ticker" class="form-control" value={{request.form.ticker}}>
+        </div>
+        <button type="submit" class="btn btn-primary">Add</button>
     </form>
+
     <ul id="list">
         {% for stock in stocks %}
         <li id="inital" class="list-group-item"><a href="/stock/{{ stock[0]['StockSymbol'] }}">{{ stock[0]['StockSymbol'] }}</a> {{ stock[0]['LastTradePrice'] }} {{ stock[0]['Change'] }} {{ stock[0]['ChangePercent'] }}%</li>

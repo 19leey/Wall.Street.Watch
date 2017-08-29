@@ -151,5 +151,6 @@ def logout():
 # For Purely Testing Purposes Only
 @app.route('/test', methods=['GET', 'POST'])
 def test():
+    form = TickerForm()
 
     return render_template('temp.html', form=form)

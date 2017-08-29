@@ -5,5 +5,14 @@
         <script src="https://code.jquery.com/jquery-latest.js"></script>
     </head>
     <h1>Database stuff</h1>
+    <form action="" method="POST" name="ticker">
+    {{ form.hidden_tag() }}
+
+        <div class="form-group">
+            <label>Ticker:</label>
+            <input type="text" name="ticker" class="form-control" value={{request.form.ticker}}>
+        </div>
+        <button type="submit" class="btn btn-primary">Add</button>
+    </form>
 
 {% endblock %}
