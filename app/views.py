@@ -2,8 +2,8 @@ from app import app
 from .forms import LoginForm, RegisterForm, TickerForm
 from flask import render_template, flash, redirect, url_for, request, session, logging
 from .googlefinance import getQuotes
+from .helper import initWatchedStocks, updateWatchedStocks, getQuandlData
 import urllib.request
-import quandl
 import json
 from flask_mysqldb import MySQL
 from passlib.hash import sha256_crypt
@@ -37,12 +37,7 @@ from .tmp_stocks import Stocks
 @app.route('/watchlist', methods=['GET', 'POST'])
 def watchlist():
     form = TickerForm()
-
-    stocks = Stocks()
-    data = []
-
-    for stock in stocks:
-        data.append(getQuotes(stock['ticker']))
+    data = initWatchedStocks(Stocks())
     
     return render_template('watchlist.html', stocks=data, form=form)
 
@@ -50,15 +45,7 @@ def watchlist():
 # Update Watchlist
 @app.route('/updateWatchlist', methods=['GET', 'POST'])
 def updateWatchlist():
-    stocks = Stocks()
-    data = '';
-
-    for stock in stocks:
-        data += json.dumps(getQuotes(stock['ticker']))
-
-    data = data.replace('][', ',')
-
-    val = getQuotes('AAPL')
+    data = updateWatchedStocks(Stocks())
 
     return data
 
@@ -67,10 +54,7 @@ def updateWatchlist():
 @app.route('/stock/<string:ticker>')
 def stock(ticker):
     quote = getQuotes(ticker)
-
-    df = quandl.get('WIKI/' + ticker)
-    tmp = df['Close'].to_json()
-    data = tmp.replace('"', '').replace(',', '],[').replace('}', ']]').replace('{', '[[').replace(':', ',')
+    data = getQuandlData(ticker)
 
     return render_template('stock.html', ticker=ticker, quote=quote, data=data)
 
@@ -92,14 +76,14 @@ def connect():
 # Register
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    form = RegisterForm(request.form)
+    form = RegisterForm()
 
     if request.method == 'POST' and form.validate():
-        firstname = form.firstname.data
-        lastname = form.lastname.data
-        email = form.email.data
-        username = form.username.data
-        password = sha256_crypt.encrypt(str(form.password.data))
+        firstname = request.form['firstname']
+        lastname = request.form['lastname']
+        email = request.form['email']
+        username = request.form['username']
+        password = sha256_crypt.encrypt(str(request.form['password']))
 
         cur = mysql.connection.cursor()
 
@@ -117,7 +101,7 @@ def register():
 # Login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    form = LoginForm(request.form)
+    form = LoginForm()
 
     if request.method == 'POST':
         # Get Form Fields
