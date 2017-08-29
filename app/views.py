@@ -1,6 +1,6 @@
 from app import app
 from .forms import LoginForm, RegisterForm, TickerForm
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, session, logging
 from .googlefinance import getQuotes
 import urllib.request
 import quandl
@@ -13,13 +13,14 @@ app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = ''
 app.config['MYSQL_DB'] = 'wallstreetwatch'
+app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 
 mysql = MySQL(app)
 
 
 # Home
 @app.route('/')
-def index():
+def home():
     return render_template('home.html')
 
 
@@ -110,7 +111,7 @@ def register():
 
         return redirect(url_for('login'))
 
-    return render_template('temp.html', form=form)
+    return render_template('register.html', form=form)
 
 
 # Login
@@ -130,12 +131,22 @@ def login():
         result = cur.execute("SELECT * FROM users WHERE username = %s", [username])
 
         if result > 0:
+            data = cur.fetchone()
+            password = data['password']
 
-            return "success"
+            if sha256_crypt.verify(password_candidate, password):
+                session['logged_in'] = True
+                session['username'] = username
+
+                return redirect(url_for('home'))
+
+            else:
+                return render_template('login.html', form=form)
+
+            cur.close()
+
         else:
-            return "failure"
-
-        cur.close()
+            return render_template('login.html', form=form)
 
     return render_template('login.html', form=form)
 
