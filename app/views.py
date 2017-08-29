@@ -135,7 +135,14 @@ def login():
     return render_template('login.html', form=form)
 
 
+# Logout
+@app.route('/logout')
+def logout():
+    if session['logged_in']:
+        session.clear()
+        flash('logged out', 'success')
 
+        return redirect(url_for('login'))
 
 
 
