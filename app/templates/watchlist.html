@@ -19,15 +19,15 @@
                     var stocks = format(response);
                     for (i in stocks) {
                         var stock = stocks[i].StockSymbol+"\">"+stocks[i].StockSymbol + "</a> " + stocks[i].LastTradePrice + " " + stocks[i].Change + " " + stocks[i].ChangePercent + "%<br>";
-                        data.push('<li class="list-group-item"><a href="/Stock/'+stock+'</h4>');
-                        $("#list ").empty();
+                        data.push('<li class="list-group-item"><a href="/stock/'+stock+'</li>');
+                        $("#inital").remove();
                 }
-                $("#list").empty().html(data.join(""));
+                $("#list").empty().html(data.join(" "));
             });
         }
 
         $(document).ready(function() {
-            setInterval("update()",5000);
+            setInterval("update()",20000);
         });
     </script>
   </head>
@@ -42,9 +42,9 @@
     </p>
     <p><input type="submit" value="Submit"></p>
     </form>
-    {% for stock in stocks %}
     <ul id="list">
-        <li class="list-group-item"><a href="/Stock/{{ stock[0]['Symbol'] }}">{{ stock[0]['StockSymbol'] }}</a> {{ stock[0]['LastTradePrice'] }} {{ stock[0]['Change'] }} {{ stock[0]['ChangePercent'] }}</h4>
+        {% for stock in stocks %}
+        <li id="inital" class="list-group-item"><a href="/stock/{{ stock[0]['StockSymbol'] }}">{{ stock[0]['StockSymbol'] }}</a> {{ stock[0]['LastTradePrice'] }} {{ stock[0]['Change'] }} {{ stock[0]['ChangePercent'] }}%</li>
+        {% endfor %}
     </ul>
-    {% endfor %}
 {% endblock %}

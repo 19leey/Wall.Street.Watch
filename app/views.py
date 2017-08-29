@@ -89,7 +89,6 @@ def login():
 # For Purely Testing Purposes Only
 @app.route('/test')
 def test():
-    quote = getQuotes('AAPL')
 
 
-    return render_template('temp.html', stock=quote)
+    return render_template('temp.html')
