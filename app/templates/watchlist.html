@@ -4,30 +4,26 @@
   <head>
     <script src="https://code.jquery.com/jquery-latest.js"></script>
     <script>
-        // function to format json string passed in 
-        function format(data){
-            jsonObj = JSON.parse(data);
-
-            return jsonObj;
-        }
-
-        // function to update stock information every 3 seconds
+        // function to update watchlist
         function update(){
             $.get('/updateWatchlist' ,function (response, status) {
-                if (status == 'success')
+                if (status == 'success') {
                     var data = [];
-                    var stocks = format(response);
+                    var stocks = JSON.parse(response);
+
                     for (i in stocks) {
                         var stock = stocks[i].StockSymbol+"\">"+stocks[i].StockSymbol + "</a> " + stocks[i].LastTradePrice + " " + stocks[i].Change + " " + stocks[i].ChangePercent + "%<br>";
                         data.push('<li class="list-group-item"><a href="/stock/'+stock+'</li>');
                         $("#inital").remove();
+                    }
+                    $("#list").empty().html(data.join(" "));
                 }
-                $("#list").empty().html(data.join(" "));
             });
         }
 
+        // update watchlist every 20 seconds
         $(document).ready(function() {
-            setInterval("update()",20000);
+            setInterval("update()",15000);
         });
     </script>
   </head>

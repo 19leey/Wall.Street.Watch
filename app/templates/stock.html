@@ -32,7 +32,7 @@
             return data;
         }
 
-        // function to update stock information every 3 seconds
+        // function to update stock information
         function update(){
             $.get('/updateStock/{{ ticker }}' ,function (response, status) {
                 if (status == 'success')        
@@ -40,6 +40,7 @@
             });
         }
 
+        // update stock every 3 seconds
         $(document).ready(function() {
             setInterval("update()",3000);
         });

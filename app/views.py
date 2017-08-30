@@ -104,14 +104,11 @@ def login():
     form = LoginForm()
 
     if request.method == 'POST':
-        # Get Form Fields
         username = request.form['username']
         password_candidate = request.form['password']
 
-        # Create cursor
         cur = mysql.connection.cursor()
 
-        # Get user by username
         result = cur.execute("SELECT * FROM users WHERE username = %s", [username])
 
         if result > 0:
@@ -152,5 +149,26 @@ def logout():
 @app.route('/test', methods=['GET', 'POST'])
 def test():
     form = TickerForm()
+
+    cur = mysql.connection.cursor()
+
+    #if cur.execute("SELECT * FROM stocks") > 0:
+
+    if request.method == 'POST':
+        ticker = request.form['ticker']
+
+        if cur.execute("SELECT * FROM stocks WHERE ticker = %s", [ticker]) <= 0:
+
+            cur.execute("INSERT INTO stocks(ticker, owner) VALUES(%s, %s)", (ticker, session['username']))
+        
+            mysql.connection.commit()
+
+            cur.close()
+
+            return render_template('temp.html', form=form)
+
+        cur.close()
+
+        return render_template('temp.html', form=form)
 
     return render_template('temp.html', form=form)
