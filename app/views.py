@@ -2,7 +2,7 @@ from app import app
 from .forms import LoginForm, RegisterForm, TickerForm
 from flask import render_template, flash, redirect, url_for, request, session, logging
 from .googlefinance import getQuotes
-from .helper import initWatchedStocks, updateWatchedStocks, getQuandlData
+from .helper import initWatchedStocks, updateWatchedStocks, getAVHistorical, getQuandlData
 import urllib.request
 import json
 from flask_mysqldb import MySQL
@@ -106,7 +106,7 @@ def remove_stock(ticker):
 @app.route('/stock/<string:ticker>')
 def stock(ticker):
     quote = getQuotes(ticker)
-    data = []#getQuandlData(ticker)
+    data = getQuandlData(ticker)
 
     return render_template('stock.html', ticker=ticker, quote=quote, data=data)
 
@@ -199,16 +199,12 @@ def logout():
 
 
 
+
+
 # For Purely Testing Purposes Only
 @app.route('/test', methods=['GET', 'POST'])
 def test():
-    form = TickerForm()
 
-    cur = mysql.connection.cursor()
+    data = getAVHistorical('AAPL')
 
-    num_watch = cur.execute("SELECT * FROM stocks")
-    stocks = cur.fetchall()
-
-    cur.close()
-
-    return render_template('temp.html', form=form, stocks=stocks, num_watch=num_watch)
+    return data
