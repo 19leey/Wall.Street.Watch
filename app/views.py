@@ -37,7 +37,8 @@ def watchlist():
 
     cur = mysql.connection.cursor()
 
-    num_watch = cur.execute("SELECT * FROM stocks")
+    # get stocks watched by current user
+    num_watch = cur.execute("SELECT * FROM stocks WHERE owner = %s", [session['username']])
     tickers = cur.fetchall()
 
     cur.close()
@@ -51,7 +52,8 @@ def watchlist():
 @app.route('/updateWatchlist', methods=['GET', 'POST'])
 def updateWatchlist():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM stocks")
+    # get stocks watched by current user
+    cur.execute("SELECT * FROM stocks WHERE owner = %s", [session['username']])
     stocks = cur.fetchall()
     cur.close()
 
@@ -65,15 +67,18 @@ def updateWatchlist():
 def add_stock():
     cur = mysql.connection.cursor()
 
+    # get ticker value from form
     ticker = request.form['ticker']
+    # check if stock is already being watched by user
+    if cur.execute("SELECT * FROM stocks WHERE ticker = %s AND owner = %s", [ticker, session['username']]) <= 0:
 
-    if cur.execute("SELECT * FROM stocks WHERE ticker = %s", [ticker]) <= 0:
-
+        # check that stock exisits
         try:
             quote = getQuotes(ticker)
         except urllib.error.HTTPError as err:
             return redirect(url_for('watchlist'))
 
+        # insert stock into database
         cur.execute("INSERT INTO stocks(ticker, owner) VALUES(%s, %s)", (ticker, session['username']))
         
         mysql.connection.commit()
@@ -93,7 +98,8 @@ def add_stock():
 def remove_stock(ticker):
     cur = mysql.connection.cursor()
 
-    cur.execute("DELETE FROM stocks WHERE ticker = %s", [ticker])
+    # delete stock from database
+    cur.execute("DELETE FROM stocks WHERE ticker = %s AND owner = %s", [ticker, session['username']])
 
     mysql.connection.commit()
 
@@ -139,7 +145,8 @@ def register():
 
         cur = mysql.connection.cursor()
 
-        cur.execute("INSERT INTO users(firstname, lastname, email, username, password) VALUES(%s, %s, %s, %s, %s)", (firstname, lastname, email, username, password))
+        cur.execute("INSERT INTO users(firstname, lastname, email, username, password) VALUES(%s, %s, %s, %s, %s)", 
+            (firstname, lastname, email, username, password))
 
         mysql.connection.commit()
 
@@ -204,6 +211,17 @@ def logout():
 # For Purely Testing Purposes Only
 @app.route('/test', methods=['GET', 'POST'])
 def test():
+    if session['logged_in']:
+        curr_user = session['username']
+        cur = mysql.connection.cursor()
+
+        cur.execute("SELECT * FROM stocks WHERE owner = %s", ['user'])
+        stocks = cur.fetchall()
+
+        values = ''
+
+        for stock in stocks:
+            values += stock['ticker']+" "
 
 
-    return render_template('temp.html')
+        return values
