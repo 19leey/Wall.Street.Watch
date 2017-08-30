@@ -8,7 +8,7 @@ import json
 from flask_mysqldb import MySQL
 from passlib.hash import sha256_crypt
 
-# Config MySQL
+# Configure MySQL
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = ''
@@ -30,9 +30,6 @@ def about():
     return render_template('about.html')
 
 
-# IMPLEMENT SQL DATABASE CONNECTION
-from .tmp_stocks import Stocks
-
 # Watchlist
 @app.route('/watchlist', methods=['GET', 'POST'])
 def watchlist():
@@ -48,6 +45,19 @@ def watchlist():
     stocks = initWatchedStocks(tickers)
     
     return render_template('watchlist.html', form=form, stocks=stocks, num_watch=num_watch)
+
+
+# Update Watchlist
+@app.route('/updateWatchlist', methods=['GET', 'POST'])
+def updateWatchlist():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM stocks")
+    stocks = cur.fetchall()
+    cur.close()
+
+    data = updateWatchedStocks(stocks)
+
+    return data
 
 
 # Add Stock to Watchlist
@@ -90,19 +100,6 @@ def remove_stock(ticker):
     cur.close()
 
     return redirect(url_for('watchlist'))
-
-
-# Update Watchlist
-@app.route('/updateWatchlist', methods=['GET', 'POST'])
-def updateWatchlist():
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM stocks")
-    stocks = cur.fetchall()
-    cur.close()
-
-    data = updateWatchedStocks(stocks)
-
-    return data
 
 
 # Stock Details

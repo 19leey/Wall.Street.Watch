@@ -4,33 +4,6 @@
     <head>
         <script src="https://code.jquery.com/jquery-latest.js"></script>
     </head>
-    <h1>Database stuff</h1>
-    <form action="{{ url_for('add_stock') }}" method="POST" name="ticker">
-    {{ form.hidden_tag() }}
-
-        <div class="form-group">
-            <label>Ticker:</label>
-            <input type="text" name="ticker" class="form-control" value={{request.form.ticker}}>
-        </div>
-        <button type="submit" class="btn btn-primary">Add</button>
-    </form>
-
-    {% if num_watch == 0 %}
-    <h3>Add a stock to watch</h3>
-    {% else %}
-    <h3>Stocks</h3>
-      <table class="table table-striped">
-        {% for stock in stocks %}
-          <tr>
-            <td>{{ stock['ticker'] }}</td>
-            <td>
-              <form action="{{ url_for('remove_stock', id=stock['id']) }}" method="POST">
-                <button type="submit" class="btn btn-danger pull-right">Remove</button>
-              </form>
-            </td>
-          </tr>
-        {% endfor %}
-      </table>
-    {% endif %}
+    <h1>news feed link</h1>
 
 {% endblock %}

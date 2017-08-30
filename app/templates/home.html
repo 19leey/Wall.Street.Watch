@@ -2,13 +2,13 @@
 
 {% block body %}
   <div class="jumbotron text-center">
-    <h1>Future of Something</h1>
-    <p class="lead">Play around on the playground</p>
+    <h1>Wall Street Watch</h1>
+    <p class="lead">Watch the Street of Wall</p>
     {% if session.logged_in == NULL %}
     	<a href="/register" class="btn btn-primary btn-lg">Register</a>
     	<a href="/login" class="btn btn-success btn-lg">Login</a>
     {% else %}
-    	<h3>Welcome!</h3>
+    	<h3>Welcome {{ session.username }}!</h3>
     {% endif %}
   </div>
 {% endblock %}

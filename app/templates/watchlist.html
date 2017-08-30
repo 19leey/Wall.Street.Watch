@@ -12,7 +12,7 @@
                     var stocks = JSON.parse(response);
 
                     for (i in stocks) {
-                        var stock = stocks[i].StockSymbol+"\">"+stocks[i].StockSymbol + "</a> " + stocks[i].LastTradePrice + " " + stocks[i].Change + " " + stocks[i].ChangePercent + "%<br>";
+                        var stock = stocks[i].StockSymbol+"\">"+stocks[i].StockSymbol + "</a> $" + stocks[i].LastTradePrice + " " + stocks[i].Change + " " + stocks[i].ChangePercent + "%<br>";
                         data.push('<tr><td><a href="/stock/'+stock+'</td>'
                             +'<td><form action="{{ url_for('remove_stock', ticker=stocks[0]['StockSymbol']) }}" method="POST"><button type="submit" class="btn btn-danger pull-right">Remove</button></form></td></tr>');
                         $("#inital").remove()
@@ -50,7 +50,7 @@
       <table id="list" class="table table-striped">
         {% for stock in stocks %}
           <tr id="inital">
-            <td><a href="/stock/{{ stock[0]['StockSymbol'] }}">{{ stock[0]['StockSymbol'] }}</a> {{ stock[0]['LastTradePrice'] }} {{ stock[0]['Change'] }} {{ stock[0]['ChangePercent'] }}%</td>
+            <td><a href="/stock/{{ stock[0]['StockSymbol'] }}">{{ stock[0]['StockSymbol'] }}</a> ${{ stock[0]['LastTradePrice'] }} {{ stock[0]['Change'] }} {{ stock[0]['ChangePercent'] }}%</td>
             <td>
               <form action="{{ url_for('remove_stock', ticker=stock[0]['StockSymbol']) }}" method="POST">
                 <button type="submit" class="btn btn-danger pull-right">Remove</button>
