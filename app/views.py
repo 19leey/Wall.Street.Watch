@@ -37,39 +37,59 @@ from .tmp_stocks import Stocks
 @app.route('/watchlist', methods=['GET', 'POST'])
 def watchlist():
     form = TickerForm()
-    #data = initWatchedStocks(Stocks())
 
     cur = mysql.connection.cursor()
 
     num_watch = cur.execute("SELECT * FROM stocks")
     tickers = cur.fetchall()
 
-    if request.method == 'POST':
-        ticker = request.form['ticker']
-
-        if cur.execute("SELECT * FROM stocks WHERE ticker = %s", [ticker]) <= 0:
-
-            try:
-                quote = getQuotes(ticker)
-            except urllib.error.HTTPError as err:
-                return redirect(url_for('test'))
-
-            cur.execute("INSERT INTO stocks(ticker, owner) VALUES(%s, %s)", (ticker, session['username']))
-        
-            mysql.connection.commit()
-
-            cur.close()
-
-            return redirect(url_for('watchlist'))
-
-        else:
-            return redirect(url_for('watchlist'))
-
     cur.close()
 
     stocks = initWatchedStocks(tickers)
     
     return render_template('watchlist.html', form=form, stocks=stocks, num_watch=num_watch)
+
+
+# Add Stock to Watchlist
+@app.route('/add_stock', methods=['POST'])
+def add_stock():
+    cur = mysql.connection.cursor()
+
+    ticker = request.form['ticker']
+
+    if cur.execute("SELECT * FROM stocks WHERE ticker = %s", [ticker]) <= 0:
+
+        try:
+            quote = getQuotes(ticker)
+        except urllib.error.HTTPError as err:
+            return redirect(url_for('watchlist'))
+
+        cur.execute("INSERT INTO stocks(ticker, owner) VALUES(%s, %s)", (ticker, session['username']))
+        
+        mysql.connection.commit()
+
+        cur.close()
+
+        return redirect(url_for('watchlist'))
+
+    else:
+        cur.close()
+
+        return redirect(url_for('watchlist'))
+
+
+# Remove Stock from Watchlist
+@app.route('/remove/<string:ticker>', methods=['POST'])
+def remove_stock(ticker):
+    cur = mysql.connection.cursor()
+
+    cur.execute("DELETE FROM stocks WHERE ticker = %s", [ticker])
+
+    mysql.connection.commit()
+
+    cur.close()
+
+    return redirect(url_for('watchlist'))
 
 
 # Update Watchlist
@@ -192,27 +212,6 @@ def test():
     num_watch = cur.execute("SELECT * FROM stocks")
     stocks = cur.fetchall()
 
-    if request.method == 'POST':
-        ticker = request.form['ticker']
-
-        if cur.execute("SELECT * FROM stocks WHERE ticker = %s", [ticker]) <= 0:
-
-            try:
-                quote = getQuotes(ticker)
-            except urllib.error.HTTPError as err:
-                return redirect(url_for('test'))
-
-            cur.execute("INSERT INTO stocks(ticker, owner) VALUES(%s, %s)", (ticker, session['username']))
-        
-            mysql.connection.commit()
-
-            cur.close()
-
-            return redirect(url_for('test'))
-
-        else:
-            return redirect(url_for('test'))
-
-        cur.close()
+    cur.close()
 
     return render_template('temp.html', form=form, stocks=stocks, num_watch=num_watch)
