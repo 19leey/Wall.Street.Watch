@@ -15,8 +15,12 @@
         <button type="submit" class="btn btn-primary">Add</button>
     </form>
 
-    {% for stock in stocks %}
-        <p>stock.ticker</p>
-    {% endfor %}
+    {% if num_watch == 0 %}
+    <h3>Add a stock to watch</h3>
+    {% else %}
+        {% for stock in stocks %}
+            <h3>{{ stock['ticker'] }}</h3>
+        {% endfor %}
+    {% endif %}
 
 {% endblock %}

@@ -37,15 +37,50 @@ from .tmp_stocks import Stocks
 @app.route('/watchlist', methods=['GET', 'POST'])
 def watchlist():
     form = TickerForm()
-    data = initWatchedStocks(Stocks())
+    #data = initWatchedStocks(Stocks())
+
+    cur = mysql.connection.cursor()
+
+    num_watch = cur.execute("SELECT * FROM stocks")
+    tickers = cur.fetchall()
+
+    if request.method == 'POST':
+        ticker = request.form['ticker']
+
+        if cur.execute("SELECT * FROM stocks WHERE ticker = %s", [ticker]) <= 0:
+
+            try:
+                quote = getQuotes(ticker)
+            except urllib.error.HTTPError as err:
+                return redirect(url_for('test'))
+
+            cur.execute("INSERT INTO stocks(ticker, owner) VALUES(%s, %s)", (ticker, session['username']))
+        
+            mysql.connection.commit()
+
+            cur.close()
+
+            return redirect(url_for('watchlist'))
+
+        else:
+            return redirect(url_for('watchlist'))
+
+    cur.close()
+
+    stocks = initWatchedStocks(tickers)
     
-    return render_template('watchlist.html', stocks=data, form=form)
+    return render_template('watchlist.html', form=form, stocks=stocks, num_watch=num_watch)
 
 
 # Update Watchlist
 @app.route('/updateWatchlist', methods=['GET', 'POST'])
 def updateWatchlist():
-    data = updateWatchedStocks(Stocks())
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM stocks")
+    stocks = cur.fetchall()
+    cur.close()
+
+    data = updateWatchedStocks(stocks)
 
     return data
 
@@ -145,6 +180,8 @@ def logout():
 
 
 
+
+
 # For Purely Testing Purposes Only
 @app.route('/test', methods=['GET', 'POST'])
 def test():
@@ -152,12 +189,18 @@ def test():
 
     cur = mysql.connection.cursor()
 
-    #if cur.execute("SELECT * FROM stocks") > 0:
+    num_watch = cur.execute("SELECT * FROM stocks")
+    stocks = cur.fetchall()
 
     if request.method == 'POST':
         ticker = request.form['ticker']
 
         if cur.execute("SELECT * FROM stocks WHERE ticker = %s", [ticker]) <= 0:
+
+            try:
+                quote = getQuotes(ticker)
+            except urllib.error.HTTPError as err:
+                return redirect(url_for('test'))
 
             cur.execute("INSERT INTO stocks(ticker, owner) VALUES(%s, %s)", (ticker, session['username']))
         
@@ -165,10 +208,11 @@ def test():
 
             cur.close()
 
-            return render_template('temp.html', form=form)
+            return redirect(url_for('test'))
+
+        else:
+            return redirect(url_for('test'))
 
         cur.close()
 
-        return render_template('temp.html', form=form)
-
-    return render_template('temp.html', form=form)
+    return render_template('temp.html', form=form, stocks=stocks, num_watch=num_watch)
