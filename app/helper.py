@@ -9,6 +9,7 @@ def initWatchedStocks(watchedStocks):
     stocks = watchedStocks
     data = []
 
+    # create json array of watched stocks
     for stock in stocks:
         data.append(getQuotes(stock['ticker']))
 
@@ -20,9 +21,11 @@ def updateWatchedStocks(watchedStocks):
     stocks = watchedStocks
     data = '';
 
+    # create json array of watched stocks
     for stock in stocks:
         data += json.dumps(getQuotes(stock['ticker']))
 
+    # manipulate format
     data = data.replace('][', ',')
 
     return data
@@ -30,6 +33,7 @@ def updateWatchedStocks(watchedStocks):
 # returns historical data from Quandl
 def getQuandlData(ticker):
     df = quandl.get('WIKI/' + ticker)
+    # manipulate json array format
     tmp = df['Close'].to_json()
     data = tmp.replace('"', '').replace(',', '],[').replace('}', ']]').replace('{', '[[').replace(':', ',')
 
@@ -43,16 +47,19 @@ def toEpoch(timestamp):
 
     return epoch
 
-#BROKEN
 # returns historical data from AlphaVantage API
 def getAVHistorical(ticker):
     url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&apikey=ZVEQV8BQ2W8K0GPM&outputsize=full&datatype=csv&symbol='+ticker
     df = pd.read_csv(url)
 
+    # manipulate timestamps
     df.set_value(0, 'timestamp', df['timestamp'].iloc[0][:10])
 
     for x in range(len(df.index)):
         df.set_value(x, 'timestamp', toEpoch(df['timestamp'].iloc[x]))
+
+    # reverse the dataframe
+    df = df.iloc[::-1]
 
     # convert pandas dataframe to array of tuples
     subset = df[['timestamp', 'adjusted_close']]

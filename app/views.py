@@ -106,7 +106,7 @@ def remove_stock(ticker):
 @app.route('/stock/<string:ticker>')
 def stock(ticker):
     quote = getQuotes(ticker)
-    data = getQuandlData(ticker)
+    data = getAVHistorical(ticker)
 
     return render_template('stock.html', ticker=ticker, quote=quote, data=data)
 
@@ -205,6 +205,5 @@ def logout():
 @app.route('/test', methods=['GET', 'POST'])
 def test():
 
-    data = getAVHistorical('AAPL')
 
     return data
