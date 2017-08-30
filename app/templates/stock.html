@@ -24,7 +24,7 @@
             var jsonObj = JSON.parse(data);
             data = 
                 "Symbol: " + jsonObj[0].StockSymbol 
-                + "<br>Last Trade Price: " + jsonObj[0].LastTradePrice 
+                + "<br>Last Trade Price: $" + jsonObj[0].LastTradePrice 
                 + "<br>Loss/Gain: " + jsonObj[0].Change 
                 + "<br>Loss/Gain Percentage: " + jsonObj[0].ChangePercent + "%"
                 + "<br>Last Trade Time: " + jsonObj[0].LastTradeDateTimeLong;
@@ -65,6 +65,6 @@
   <div id="container" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
 
   <form>
-      <input type="button" value="Go back" onclick="history.back()"></input>
+      <input type="button" class="btn btn-primary" value="Go back" onclick="window.location.href='/watchlist'"></input>
   </form>
 {% endblock %}

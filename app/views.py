@@ -109,7 +109,7 @@ def updateWatchlist():
 @app.route('/stock/<string:ticker>')
 def stock(ticker):
     quote = getQuotes(ticker)
-    data = getQuandlData(ticker)
+    data = []#getQuandlData(ticker)
 
     return render_template('stock.html', ticker=ticker, quote=quote, data=data)
 
