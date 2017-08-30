@@ -206,4 +206,4 @@ def logout():
 def test():
 
 
-    return data
+    return render_template('temp.html')
