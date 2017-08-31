@@ -1,8 +1,8 @@
 from app import app
 from .forms import LoginForm, RegisterForm, TickerForm
+from .helper import initWatchedStocks, updateWatchedStocks, getAVHistorical, getQuandlData, getNews
 from flask import render_template, flash, redirect, url_for, request, session, logging
 from .googlefinance import getQuotes
-from .helper import initWatchedStocks, updateWatchedStocks, getAVHistorical, getQuandlData
 import urllib.request
 import json
 from flask_mysqldb import MySQL
@@ -127,10 +127,32 @@ def updateStock(ticker):
     return json.dumps(quote)
 
 
-# Conenct
-@app.route('/connect', methods=['GET', 'POST'])
-def connect():
-    return render_template('connect.html')
+# News Feed
+@app.route('/news', methods=['GET', 'POST'])
+def news():
+    cur = mysql.connection.cursor()
+
+    # get stocks watched by user
+    cur.execute("SELECT * FROM stocks WHERE owner = %s", [session['username']])
+    data = cur.fetchall()
+
+    # get news feed data
+    articles = getNews(data)
+
+    return render_template('news.html', articles=articles)
+
+
+# Update News Feed (WORKING?)
+@app.route('/update_news', methods=['GET', 'POST'])
+def update_news():
+    #cur = mysql.connection.cursor()
+
+    #cur.execute("SELECT * FROM stocks WHERE owner = %s", [session['username']])
+    #data = cur.fetchall()
+
+    #articles = getNews(data)
+
+    return redirect('news')
 
 
 # Register
@@ -204,14 +226,8 @@ def logout():
 
 
 
-
-
-
-
-
-
 # For Purely Testing Purposes Only
 @app.route('/test', methods=['GET', 'POST'])
 def test():
+    return render_template('temp.html')
 
-        return render_template('temp.html')

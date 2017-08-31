@@ -1,5 +1,6 @@
 from .googlefinance import getQuotes
 import pandas as pd
+import feedparser
 import quandl
 import json
 import time
@@ -70,3 +71,22 @@ def getAVHistorical(ticker):
     data = tmp.replace('(', '[').replace(')', ']').replace(' ', '')
 
     return data
+
+# returns rss news feed from Yahoo Finance
+def getNews(watched_stocks):
+    base_url = 'http://finance.yahoo.com/rss/headline?s='
+
+    stocks = []
+
+    # get tickers of watched stocks
+    for row in watched_stocks:
+        stocks.append(row['ticker'])
+
+    stocks_url = ','.join(map(str, stocks))
+    url = base_url + stocks_url
+
+    # handle rss news feed data
+    data = feedparser.parse(url)
+    articles = data['entries']
+
+    return articles
