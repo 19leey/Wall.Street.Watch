@@ -68,15 +68,17 @@ def add_stock():
     cur = mysql.connection.cursor()
 
     # get ticker value from form
-    ticker = request.form['ticker']
+    search_ticker = request.form['ticker']
+
+    # check that stock exisits and get actual ticker value
+    try:
+        quote = getQuotes(search_ticker)
+        ticker = quote[0]['StockSymbol']
+    except urllib.error.HTTPError as err:
+        return redirect(url_for('watchlist'))
+
     # check if stock is already being watched by user
     if cur.execute("SELECT * FROM stocks WHERE ticker = %s AND owner = %s", [ticker, session['username']]) <= 0:
-
-        # check that stock exisits
-        try:
-            quote = getQuotes(ticker)
-        except urllib.error.HTTPError as err:
-            return redirect(url_for('watchlist'))
 
         # insert stock into database
         cur.execute("INSERT INTO stocks(ticker, owner) VALUES(%s, %s)", (ticker, session['username']))
@@ -211,17 +213,5 @@ def logout():
 # For Purely Testing Purposes Only
 @app.route('/test', methods=['GET', 'POST'])
 def test():
-    if session['logged_in']:
-        curr_user = session['username']
-        cur = mysql.connection.cursor()
 
-        cur.execute("SELECT * FROM stocks WHERE owner = %s", ['user'])
-        stocks = cur.fetchall()
-
-        values = ''
-
-        for stock in stocks:
-            values += stock['ticker']+" "
-
-
-        return values
+        return render_template('temp.html')

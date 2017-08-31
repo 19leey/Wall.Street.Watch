@@ -3,6 +3,7 @@
 {% block body %}
   <head>
     <script src="https://code.jquery.com/jquery-latest.js"></script>
+    {% if num_watch > 0 %}
     <script>
         // function to update watchlist
         function update(){
@@ -29,6 +30,7 @@
         });
 
     </script>
+    {% endif %}
   </head>
 
     <h1>Watched Stocks</h1>
