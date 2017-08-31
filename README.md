@@ -15,6 +15,7 @@
 
 #### @TODO
 * Update visuals
+* ML to predict trends (MAYBE)
 
 ### Requirements:
 ~~~~
@@ -26,5 +27,4 @@ pip install passlib
 pip install demjson
 pip install feedparser
 pip install quandl
-
 ~~~~
