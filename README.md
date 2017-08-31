@@ -14,7 +14,7 @@
 	* From Yahoo Finance
 
 #### @TODO
-* Visuals
+* Update visuals
 
 ### Requirements:
 ~~~~
