@@ -1,4 +1,4 @@
-def Stocks():
+def stocks():
     stocks = [
         {
             'id': 1,

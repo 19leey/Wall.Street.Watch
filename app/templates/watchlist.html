@@ -7,7 +7,7 @@
     <script>
         // function to update watchlist
         function update(){
-            $.get('/updateWatchlist' ,function (response, status) {
+            $.get('/update_watchlist' ,function (response, status) {
                 if (status == 'success') {
                     var data = [];
                     var stocks = JSON.parse(response);

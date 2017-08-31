@@ -34,7 +34,7 @@
 
         // function to update stock information
         function update(){
-            $.get('/updateStock/{{ ticker }}' ,function (response, status) {
+            $.get('/update_stock/{{ ticker }}' ,function (response, status) {
                 if (status == 'success')        
                     $('#variableInfo').html(format(response));
             });

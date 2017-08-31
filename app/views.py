@@ -1,6 +1,6 @@
 from app import app
 from .forms import LoginForm, RegisterForm, TickerForm
-from .helper import initWatchedStocks, updateWatchedStocks, getAVHistorical, getQuandlData, getNews
+from .helper import init_watched_stocks, update_watched_stocks, get_historical, get_quandl_data, get_news
 from flask import render_template, flash, redirect, url_for, request, session, logging
 from .googlefinance import getQuotes
 import urllib.request
@@ -43,21 +43,21 @@ def watchlist():
 
     cur.close()
 
-    stocks = initWatchedStocks(tickers)
+    stocks = init_watched_stocks(tickers)
     
     return render_template('watchlist.html', form=form, stocks=stocks, num_watch=num_watch)
 
 
 # Update Watchlist
-@app.route('/updateWatchlist', methods=['GET', 'POST'])
-def updateWatchlist():
+@app.route('/update_watchlist', methods=['GET', 'POST'])
+def update_watchlist():
     cur = mysql.connection.cursor()
     # get stocks watched by current user
     cur.execute("SELECT * FROM stocks WHERE owner = %s", [session['username']])
     stocks = cur.fetchall()
     cur.close()
 
-    data = updateWatchedStocks(stocks)
+    data = update_watched_stocks(stocks)
 
     return data
 
@@ -114,14 +114,14 @@ def remove_stock(ticker):
 @app.route('/stock/<string:ticker>')
 def stock(ticker):
     quote = getQuotes(ticker)
-    data = getAVHistorical(ticker)
+    data = get_historical(ticker)
 
     return render_template('stock.html', ticker=ticker, quote=quote, data=data)
 
 
 # Update Stock
-@app.route('/updateStock/<string:ticker>', methods=['GET', 'POST'])
-def updateStock(ticker):
+@app.route('/update_stock/<string:ticker>', methods=['GET', 'POST'])
+def update_stock(ticker):
     quote = getQuotes(ticker)
 
     return json.dumps(quote)
@@ -137,7 +137,7 @@ def news():
     data = cur.fetchall()
 
     # get news feed data
-    articles = getNews(data)
+    articles = get_news(data)
 
     return render_template('news.html', articles=articles)
 
@@ -150,7 +150,7 @@ def update_news():
     #cur.execute("SELECT * FROM stocks WHERE owner = %s", [session['username']])
     #data = cur.fetchall()
 
-    #articles = getNews(data)
+    #articles = get_news(data)
 
     return redirect('news')
 

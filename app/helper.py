@@ -6,8 +6,8 @@ import json
 import time
 
 # returns inital watched stocks
-def initWatchedStocks(watchedStocks):
-    stocks = watchedStocks
+def init_watched_stocks(watched_stocks):
+    stocks = watched_stocks
     data = []
 
     # create json array of watched stocks
@@ -18,8 +18,8 @@ def initWatchedStocks(watchedStocks):
 
 
 # returns updated watched stocks
-def updateWatchedStocks(watchedStocks):
-    stocks = watchedStocks
+def update_watched_stocks(watched_stocks):
+    stocks = watched_stocks
     data = '';
 
     # create json array of watched stocks
@@ -32,7 +32,7 @@ def updateWatchedStocks(watchedStocks):
     return data
 
 # returns historical data from Quandl
-def getQuandlData(ticker):
+def get_quandl_data(ticker):
     df = quandl.get('WIKI/' + ticker)
     # manipulate json array format
     tmp = df['Close'].to_json()
@@ -41,7 +41,7 @@ def getQuandlData(ticker):
     return data
 
 # convert timestamp to epoch timestamp in milliseconds
-def toEpoch(timestamp):
+def to_epoch(timestamp):
     pattern = '%Y-%m-%d'
     epoch = int(time.mktime(time.strptime(timestamp, pattern)))
     epoch = epoch*1000
@@ -49,7 +49,7 @@ def toEpoch(timestamp):
     return epoch
 
 # returns historical data from AlphaVantage API
-def getAVHistorical(ticker):
+def get_historical(ticker):
     url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&apikey=ZVEQV8BQ2W8K0GPM&outputsize=full&datatype=csv&symbol='+ticker
     df = pd.read_csv(url)
 
@@ -57,7 +57,7 @@ def getAVHistorical(ticker):
     df.set_value(0, 'timestamp', df['timestamp'].iloc[0][:10])
 
     for x in range(len(df.index)):
-        df.set_value(x, 'timestamp', toEpoch(df['timestamp'].iloc[x]))
+        df.set_value(x, 'timestamp', to_epoch(df['timestamp'].iloc[x]))
 
     # reverse the dataframe
     df = df.iloc[::-1]
@@ -73,7 +73,7 @@ def getAVHistorical(ticker):
     return data
 
 # returns rss news feed from Yahoo Finance
-def getNews(watched_stocks):
+def get_news(watched_stocks):
     base_url = 'http://finance.yahoo.com/rss/headline?s='
 
     stocks = []
