@@ -14,17 +14,16 @@
 	* From Yahoo Finance
 
 #### @TODO
-* Update visuals
-* ML to predict trends (MAYBE)
+* ML to predict trends
 
 ### Requirements:
 ~~~~
-python3 #via anaconda
-pip install Flask
-pip install Flask-WTF
-pip install Flask-MySQLdb
-pip install passlib
-pip install demjson
-pip install feedparser
-pip install quandl
+python3
+Flask
+Flask-WTF
+Flask-MySQLdb
+passlib
+demjson
+feedparser
+quandl
 ~~~~
